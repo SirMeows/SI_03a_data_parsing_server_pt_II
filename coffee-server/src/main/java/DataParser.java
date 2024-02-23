@@ -27,4 +27,10 @@ public class DataParser {
         Person person = mapper.readValue(new File(filepath), Person.class);
         System.out.println("Person object from YAML:"+person);
     }
+
+/*    public void parseCSV(String filepath) throws IOException {
+
+
+        System.out.println("Person object from CSV:"+person);
+    }*/
 }
