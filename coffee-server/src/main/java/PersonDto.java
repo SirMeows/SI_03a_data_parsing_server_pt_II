@@ -1,14 +1,12 @@
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.*;
-
 import java.util.List;
 
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
-public class Person {
+public class PersonDto {
 
     private String name;
     private List<String> hobbies;

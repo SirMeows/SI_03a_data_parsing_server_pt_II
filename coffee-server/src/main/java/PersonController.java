@@ -3,10 +3,10 @@ import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
-public class CoffeeController {
+public class PersonController {
 
     @GetMapping("/")
-    String getPersonJSON() {
+    String getPerson() {
         return "person information";
     }
 }

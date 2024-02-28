@@ -6,5 +6,4 @@
         <string>eating</string>
         <string>reading</string>
     </Hobbies>
-    <!-- This person has many hobbies -->
 </Person>
