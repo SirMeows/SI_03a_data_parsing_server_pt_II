@@ -1,3 +1,5 @@
+package coffee;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,11 @@ import reactor.core.publisher.Mono;
 public class PersonController {
     private PersonService personService;
     private ModelMapper modelMapper;
+
+    @GetMapping("/string")
+    public String getPersonString() {
+        return "Returning a plain String to test that there's a response from Coffee-Server";
+    }
 
     @GetMapping("/")
     public Mono<ResponseEntity<PersonDto>> getPerson() {
