@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Person>
-    <Name>Hero</Name>
-    <Hobbies>
-        <string>sleeping</string>
-        <string>eating</string>
-        <string>reading</string>
-    </Hobbies>
+    <name>Hero</name>
+
+    <hobby>sleeping</hobby>
+    <hobby>eating</hobby>
+    <hobby>reading</hobby>
+
 </Person>

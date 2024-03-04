@@ -1,19 +1,20 @@
 package coffee;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-//The service layer would in more complicated cases connect to other services
-//Here it just passes on the Mono<Entity>
 @Service
-@Getter
-@Setter
+@AllArgsConstructor
 public class PersonService {
     private PersonApiIntegration personApiIntegration;
+    private DataParser dataParser;
 
     public Mono<Person> getPerson() {
         return personApiIntegration.getPerson();
+    }
+
+    public Mono<Person> getPersonFromFile(String fileType) {
+        return dataParser.parseFile(fileType);
     }
 }
