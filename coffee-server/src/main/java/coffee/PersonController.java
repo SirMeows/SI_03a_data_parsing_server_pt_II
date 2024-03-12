@@ -38,14 +38,25 @@ public class PersonController {
                             .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    //Endpoint to call to get data from files accessible to this program
-    //TODO: Add error handling with .onErrorReturn()?
-    //fileType PathVariable only makes sense in the context of this exercise.
-    //Under normal circumstances the caller of the API wouldn't care about the data source, only that it gets the right data
+    //Endpoint to call to get data from a file of specified file type on this server
+    //TODO: Add error handling with .onErrorReturn()/.onErrorResume()?
     @PermitAll
     @GetMapping("/{fileType}")
     public Mono<ResponseEntity<PersonDto>> getPersonFromFile(@PathVariable String fileType) {
+        //System.out.println("calling the /{fileType} endpoint");
         return personService.getPersonFromFile(fileType)
+                .flatMap(person -> {
+                    var personDto = modelMapper.map(person, PersonDto.class);
+                    return Mono.just(ResponseEntity.ok(personDto));
+                })
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    //Endpoint to call to get data from some undefined file on this server
+    @PermitAll
+    @GetMapping("/from-file")
+    public Mono<ResponseEntity<PersonDto>> getPersonFromFile() {
+        return personService.getPersonFromFile()
                 .flatMap(person -> {
                     var personDto = modelMapper.map(person, PersonDto.class);
                     return Mono.just(ResponseEntity.ok(personDto));

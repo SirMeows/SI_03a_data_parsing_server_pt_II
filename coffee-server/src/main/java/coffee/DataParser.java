@@ -13,7 +13,7 @@ import java.io.IOException;
 @NoArgsConstructor
 public class DataParser {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final String filePath = "resources/";
+    private final String filePath = "resources/"; // G:\My Drive\KEA\SI_Code\SI_03a_data_parsing_server_pt_II\resources
     private final String fileName = "me";
 
     private static boolean isXML(String fileType) {
@@ -29,7 +29,8 @@ public class DataParser {
     }
 
     public Mono<Person> parseFile(String fileType) {
-        var fullFilePath = filePath + fileName + fileType.toLowerCase();
+        var fullFilePath = filePath + fileName + "." + fileType.toLowerCase();
+        System.out.println("calling the parseFile(String fileType) method from DataParser util class. fullFilePath=" + fullFilePath);
 
         return Mono.fromCallable(() -> {
             return parseXML(fullFilePath);

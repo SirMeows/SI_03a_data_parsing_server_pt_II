@@ -15,6 +15,11 @@ public class PersonService {
     }
 
     public Mono<Person> getPersonFromFile(String fileType) {
+        System.out.println("calling the getPersonFromFile(String fileType) method from PersonService");
         return dataParser.parseFile(fileType);
+    }
+
+    public Mono<Person> getPersonFromFile() {
+        return getPersonFromFile("xml");
     }
 }
