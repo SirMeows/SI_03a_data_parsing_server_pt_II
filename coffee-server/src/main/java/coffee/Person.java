@@ -1,7 +1,7 @@
 package coffee;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import lombok.*;
 
 import java.util.List;
@@ -11,11 +11,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@XStreamAlias("Person")
+@JsonPropertyOrder({"name", "hobbies"})
 public class Person {
-
     private String name;
 
-    @XStreamImplicit(itemFieldName = "hobby")
+    @JacksonXmlElementWrapper(useWrapping = false)
     private List<String> hobbies;
 }

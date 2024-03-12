@@ -52,11 +52,13 @@ public class PersonController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    //Endpoint to call to get data from some undefined file on this server
+    //Endpoint to call to get data from some file on this server
+    //Hardcoded file type = xml
     @PermitAll
     @GetMapping("/from-file")
     public Mono<ResponseEntity<PersonDto>> getPersonFromFile() {
-        return personService.getPersonFromFile()
+        var fileTypeXml = "xml";
+        return personService.getPersonFromFile(fileTypeXml)
                 .flatMap(person -> {
                     var personDto = modelMapper.map(person, PersonDto.class);
                     return Mono.just(ResponseEntity.ok(personDto));

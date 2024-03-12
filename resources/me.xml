@@ -2,8 +2,8 @@
 <Person>
     <name>Hero</name>
 
-    <hobby>sleeping</hobby>
-    <hobby>eating</hobby>
-    <hobby>reading</hobby>
+    <hobbies>sleeping</hobbies>
+    <hobbies>eating</hobbies>
+    <hobbies>reading</hobbies>
 
 </Person>

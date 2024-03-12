@@ -1,77 +1,74 @@
 package coffee;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoughtworks.xstream.XStream;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-import java.io.IOException;
 
 @Service
 @NoArgsConstructor
 public class DataParser {
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final String filePath = "resources/"; // G:\My Drive\KEA\SI_Code\SI_03a_data_parsing_server_pt_II\resources
-    private final String fileName = "me";
-
-    private static boolean isXML(String fileType) {
-        return fileType.equalsIgnoreCase(FileType.XML.getName());
-    }
-
-    private static boolean isYAML(String fileType) {
-        return fileType.equalsIgnoreCase(FileType.YAML.getName());
-    }
-
-    private static boolean isJSON(String fileType) {
-        return fileType.equalsIgnoreCase(FileType.JSON.getName());
-    }
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<Person> parseFile(String fileType) {
-        var fullFilePath = filePath + fileName + "." + fileType.toLowerCase();
-        System.out.println("calling the parseFile(String fileType) method from DataParser util class. fullFilePath=" + fullFilePath);
+        var directory = "resources/";
+        var fileName = "me";
+        var lowerCaseFileType = fileType.toLowerCase();
+        var filePath = directory + fileName + "." + lowerCaseFileType;
 
+        System.out.println("calling the parseFile(String fileType) method from DataParser util class. filePath=" + filePath);
+
+        return
+                switch (lowerCaseFileType) {
+                    case "xml" ->
+                            parseXML(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
+                    //case "json" -> parseJSON(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
+                    //case "yaml" -> parseYAML(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
+                    case "csv" ->
+                            parseCSV(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
+                    default -> Mono.error(new IllegalArgumentException("Unsupported file type: " + fileType));
+                };
+    }
+
+    private Mono<Person> parseXML(String filePath) {
         return Mono.fromCallable(() -> {
-            return parseXML(fullFilePath);
-//            if (isXML(fileType)) {
-//                return parseXML(fullFilePath);
-//            } else if (isJSON(fileType)) {
-//                return parseJSON(fullFilePath);
-//            } else if (isYAML(fileType)) {
-//                return parseYAML(fileType);
-//            } else {
-//                throw new IllegalArgumentException("unsupported file type:" + fileType);
-//            }
+            var xmlMapper = new XmlMapper();
+            xmlMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+            var person = xmlMapper.readValue(new File(filePath), Person.class);
+            System.out.println("coffee.Person object from XML:" + person);
+            return person;
         });
     }
 
-
-    private Person parseXML(String filePath) throws IOException {
-        XStream xstream = new XStream();
-        xstream.allowTypes(new Class[]{Person.class});
-        xstream.allowTypesByWildcard(new String[]{"*"});
-        xstream.processAnnotations(Person.class);
-
-        var person = (Person) xstream.fromXML(new File(filePath));
-        System.out.println("coffee.Person object from XML:"+person);
-        return person;
-    }
-
-    private Person parseJSON(String filePath) throws IOException {
-        var person = mapper.readValue(new File(filePath), Person.class);
+    private Mono<Person> parseJSON(String filePath) {
+        return Mono.fromCallable(() -> {
+            var person = objectMapper.readValue(new File(filePath), Person.class);
         System.out.println("coffee.Person object from JSON:"+person);
         return person;
+        });
     }
 
-    private Person parseYAML(String filepath) throws IOException {
-        var person = mapper.readValue(new File(filepath), Person.class);
-        System.out.println("coffee.Person object from YAML:"+person);
-        return person;
+    private Mono<Person> parseYAML(String filePath) {
+        return Mono.fromCallable(() -> {
+            var person = objectMapper.readValue(new File(filePath), Person.class);
+            System.out.println("coffee.Person object from YAML:" + person);
+            return person;
+        });
     }
 
-    private Person parseCSV(String filepath) throws IOException {
-        //System.out.println("coffee.Person object from CSV:"+person);
-        return null;
+    private Mono<Person> parseCSV(String filePath) {
+        var csvMapper = new CsvMapper();
+        var schema = csvMapper.schemaFor(Person.class).withHeader();
+
+        return Mono.fromCallable(() -> {
+            var reader = csvMapper.readerFor(Person.class).with(schema);
+            return reader.<Person>readValues(new File(filePath)).next();
+        });
     }
 }
