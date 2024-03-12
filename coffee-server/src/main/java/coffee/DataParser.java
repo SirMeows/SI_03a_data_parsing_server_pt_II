@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -13,7 +14,6 @@ import java.io.File;
 @Service
 @NoArgsConstructor
 public class DataParser {
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<Person> parseFile(String fileType) {
         var directory = "resources/";
@@ -27,8 +27,10 @@ public class DataParser {
                 switch (lowerCaseFileType) {
                     case "xml" ->
                             parseXML(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
-                    //case "json" -> parseJSON(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
-                    //case "yaml" -> parseYAML(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
+                    case "json" ->
+                            parseJSON(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
+                    case "yaml" ->
+                            parseYAML(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
                     case "csv" ->
                             parseCSV(filePath).onErrorResume(Exception.class, e -> Mono.error(new FileParseException(filePath, e)));
                     default -> Mono.error(new IllegalArgumentException("Unsupported file type: " + fileType));
@@ -48,7 +50,7 @@ public class DataParser {
 
     private Mono<Person> parseJSON(String filePath) {
         return Mono.fromCallable(() -> {
-            var person = objectMapper.readValue(new File(filePath), Person.class);
+            var person = new ObjectMapper().readValue(new File(filePath), Person.class);
         System.out.println("coffee.Person object from JSON:"+person);
         return person;
         });
@@ -56,7 +58,8 @@ public class DataParser {
 
     private Mono<Person> parseYAML(String filePath) {
         return Mono.fromCallable(() -> {
-            var person = objectMapper.readValue(new File(filePath), Person.class);
+            var mapper = new ObjectMapper(new YAMLFactory());
+            var person = mapper.readValue(new File(filePath), Person.class);
             System.out.println("coffee.Person object from YAML:" + person);
             return person;
         });
