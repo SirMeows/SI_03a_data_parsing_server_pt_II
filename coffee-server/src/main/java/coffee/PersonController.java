@@ -25,9 +25,9 @@ public class PersonController {
         return "Returning a plain String to test that there's a response from Coffee-Server";
     }
 
-    //Endpoint to call for getting data from another server
+    //Endpoint to call for getting data from snake-server
     @PermitAll
-    @GetMapping("/")
+    @GetMapping("/snake-data")
     public Mono<ResponseEntity<PersonDto>> getPerson() {
         //Response Mono is a stream where conversion of POJO to JSON is handled automatically
         return personService.getPerson()
@@ -39,11 +39,10 @@ public class PersonController {
     }
 
     //Endpoint to call to get data from a file of specified file type on this server
-    //TODO: Add error handling with .onErrorReturn()/.onErrorResume()?
+    //TODO: Add error handling with .onErrorResume()
     @PermitAll
     @GetMapping("/{fileType}")
     public Mono<ResponseEntity<PersonDto>> getPersonFromFile(@PathVariable String fileType) {
-        //System.out.println("calling the /{fileType} endpoint");
         return personService.getPersonFromFile(fileType)
                 .flatMap(person -> {
                     var personDto = modelMapper.map(person, PersonDto.class);

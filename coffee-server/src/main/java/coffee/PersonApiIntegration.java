@@ -13,11 +13,11 @@ import reactor.core.publisher.Mono;
 @Service
 public class PersonApiIntegration {
     private final WebClient webClient;
-    private final String serverBUri = "/";
+    private final String snakeServerUri = "http://127.0.0.1:8000/snake-person";
 
     public Mono<Person> getPerson() {
         return this.webClient.get()
-                .uri(serverBUri)
+                .uri(snakeServerUri)
                 .retrieve()
                 .bodyToMono(Person.class);
     }

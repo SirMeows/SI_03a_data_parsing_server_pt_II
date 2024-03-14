@@ -21,8 +21,6 @@ public class DataParser {
         var lowerCaseFileType = fileType.toLowerCase();
         var filePath = directory + fileName + "." + lowerCaseFileType;
 
-        System.out.println("calling the parseFile(String fileType) method from DataParser util class. filePath=" + filePath);
-
         return
                 switch (lowerCaseFileType) {
                     case "xml" ->
